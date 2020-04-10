@@ -2,10 +2,26 @@
 //
 
 #include <iostream>
+#include<opencv.hpp>
+
+using namespace cv;
+using namespace std;
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	Mat srcMat = imread("E:\\Picture\\lena.jpg");
+	Mat dst;
+	float angle = -10.0, scale = 1;
+	Point2f center(srcMat.cols / 2.0, srcMat.rows / 2.0);
+	Mat rot = getRotationMatrix2D(center, angle, scale);
+	Rect bbox = RotatedRect(center, srcMat.size(), angle).boundingRect();
+	rot.at<double>(0, 2) += bbox.width / 2.0 - center.x;
+	rot.at<double>(1, 2) += bbox.height / 2.0 - center.y;
+	warpAffine(srcMat, dst, rot, bbox.size());
+
+	imshow("原图", srcMat);
+	imshow("dst", dst);
+	waitKey();
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
